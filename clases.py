@@ -1,6 +1,6 @@
 
 import numpy as np
-
+from variables import AGUA, AGUA_DISPARADA, BARCO, BARCO_TOCADO
 
 class Tablero:
 
@@ -240,23 +240,24 @@ class Tablero:
 
     def mostrar(self, ocultar_barcos=False):
 
-        # Crear una copia del tablero para mostrarlo
-        # De esta manera no modificamos la matriz original
-        tablero_visual = self.tablero.copy()
+        print("  A B C D E F G H I J")
 
-        # Si queremos ocultar los barcos (por ejemplo, al mostrar
-        # el tablero del adversario)
-        if ocultar_barcos:
+        for fila in range(self.dimensiones):
 
-            # Ocultar las posiciones de los barcos
-            tablero_visual[self.tablero == 1] = 0
+            print(fila + 1, end=" ")
 
-            # Mostrar los disparos que han fallado
-            tablero_visual[self.disparos == 1] = 2
+            for columna in range(self.dimensiones):
 
-            # Mostrar los disparos que han acertado
-            tablero_visual[self.disparos == 2] = 3
+                if self.disparos[fila, columna] == 1:
+                    print(AGUA_DISPARADA, end=" ")
 
-        # Imprimir el tablero resultante
-        print(tablero_visual)
+                elif self.disparos[fila, columna] == 2:
+                    print(BARCO_TOCADO, end=" ")
 
+                elif self.tablero[fila, columna] == 1 and not ocultar_barcos:
+                    print(BARCO, end=" ")
+
+                else:
+                    print(AGUA, end=" ")
+
+            print()
