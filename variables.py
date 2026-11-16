@@ -1,24 +1,38 @@
-#Definición de variables globales
 
-# Definición del tamaño del tablero
+# ============================================================
+# VARIABLES Y CONSTANTES DEL JUEGO
+# ============================================================
+
+# Tamaño del tablero.
+# El tablero tendrá 10 filas y 10 columnas.
 TAMANO_TABLERO = 10
 
-# Diccionario que representa los barcos y sus tamñanos de eslora
-barcos = {
-    "barco_1_0": 1,
-    "barco_1_1": 1,
-    "barco_1_2": 1,
-    "barco_1_3": 1,
-    "barco_2_0": 2,
-    "barco_2_1": 2,
-    "barco_2_2": 2,
-    "barco_3_0": 3,
-    "barco_3_1": 3,
-    "barco_4_0": 4  
-    
+
+# Diccionario que contiene todos los barcos de la partida.
+# Cada clave representa el nombre de un barco y su valor
+# indica su eslora (número de casillas que ocupa).
+#
+# En total hay 10 barcos que ocupan 20 casillas.
+BARCOS = {
+    "lancha_1": 1,
+    "lancha_2": 1,
+    "lancha_3": 1,
+    "lancha_4": 1,
+    "crucero_1": 2,
+    "crucero_2": 2,
+    "crucero_3": 2,
+    "submarino_1": 3,
+    "submarino_2": 3,
+    "buque_1": 4
 }
-# Definición de los símbolos que representan el estado de cada celda del tablero
-AGUA = "A"
-AGUA_DISPARADA = "O"
-BARCO = "B"
-BARCO_TOCADO = "X"
+
+
+# ============================================================
+# SÍMBOLOS DEL TABLERO
+# ============================================================
+
+# Cada constante representa un estado posible de una casilla.
+AGUA = "A"             # Casilla vacía sin disparar
+AGUA_DISPARADA = "O"   # Casilla vacía donde ya se ha disparado
+BARCO = "B"            # Casilla ocupada por un barco
+BARCO_TOCADO = "X"     # Casilla de un barco que ha recibido un impacto
