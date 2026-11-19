@@ -2,249 +2,259 @@
 import numpy as np
 from variables import AGUA, AGUA_DISPARADA, BARCO, BARCO_TOCADO
 
-class Tablero:
 
-    # ==================================================
-    # CONSTRUCTOR
-    # ==================================================
+class Tablero:
+    """
+    Representa el tablero de juego de un jugador.
+
+    Attributes:
+        id_jugador (str): Identificador del jugador.
+        dimensiones (int): Tamaño del tablero (dimensiones x dimensiones).
+        barcos (dict): Diccionario con los nombres y tamaños de los barcos.
+        tablero (np.ndarray): Tablero donde se colocan los barcos.
+        disparos (np.ndarray): Tablero donde se registran los disparos recibidos.
+        posiciones_barcos (dict): Posiciones que ocupa cada barco.
+        barcos_hundidos (list): Lista de barcos que han sido hundidos.
+    """
 
     def __init__(self, id_jugador, dimensiones, barcos):
+        """
+        Inicializa el tablero y guarda los datos del jugador y sus barcos.
 
-        # Guardar los datos del jugador y sus barcos
+        Atributos:
+            id_jugador (str): Identificador del jugador.
+            dimensiones (int): Tamaño del tablero.
+            barcos (dict): Diccionario con los nombres y tamaños de los barcos.
+        """
+
         self.id_jugador = id_jugador
         self.dimensiones = dimensiones
         self.barcos = barcos
 
-        # Diccionario para guardar las posiciones de cada barco
-        # Lista para registrar los barcos que ya han sido hundidos
         self.posiciones_barcos = {}
         self.barcos_hundidos = []
 
-        # Crear las matrices del tablero
-        # 0 = casilla vacía / sin disparar
-        self.tablero = np.zeros((dimensiones, dimensiones))
-        self.disparos = np.zeros((dimensiones, dimensiones))
+        # 0 = agua, 1 = barco
+        self.tablero = np.zeros((dimensiones, dimensiones), dtype=int)
+
+        # 0 = sin disparar, 1 = agua, 2 = barco tocado
+        self.disparos = np.zeros((dimensiones, dimensiones), dtype=int)
 
 
-    # ==================================================
-    # COLOCAR BARCOS
-    # ==================================================
+    def colocar_barco(self, barco, fila, columna, orientacion):
+        """
+        Comprueba si el barco se puede colocar y lo coloca en el tablero.
 
-    def colocar_barcos(self, barco, fila, columna, orientacion):
+        Atributos:
+            barco (str): Nombre del barco que se quiere colocar.
+            fila (int): Fila donde comienza el barco.
+            columna (int): Columna donde comienza el barco.
+            orientacion (str): Orientación del barco (N, S, E u O).
 
-        # Comprobar que el barco existe en el diccionario
+        Returns:
+            bool: True si se coloca correctamente, False si no es posible.
+        """
+
         if barco not in self.barcos:
-            print("El barco no existe")
             return False
 
-        # Comprobar que el barco todavía no está colocado
         if barco in self.posiciones_barcos:
-            print("Este barco ya está colocado")
             return False
 
-        # Obtener la longitud del barco
         eslora = self.barcos[barco]
 
-        # Lista donde guardaremos las coordenadas que ocupará el barco
+        if not isinstance(fila, (int, np.integer)) or not isinstance(columna, (int, np.integer)):
+            return False
+
+        if fila < 0 or columna < 0 or fila >= self.dimensiones or columna >= self.dimensiones:
+            return False
+
         posiciones = []
 
-        # ----------------------------------------------
-        # Comprobar coordenadas
-        # ----------------------------------------------
+        # Calcular las posiciones según la orientación
+        if orientacion == "N":
 
-        # Las coordenadas deben ser números enteros
-        if not isinstance(fila, (int, np.integer)) or not isinstance(columna, (int, np.integer)):
-            print("Las coordenadas deben ser enteros")
-            return False
-
-        # Las coordenadas no pueden ser negativas
-        if fila < 0 or columna < 0:
-            print("Coordenadas fuera del tablero")
-            return False
-
-        # ----------------------------------------------
-        # Calcular posiciones según la orientación
-        # ----------------------------------------------
-
-        # Orientación horizontal: mantener la fila y avanzar por columnas
-        if orientacion == "horizontal":
-
-            # Comprobar que el barco no salga por el límite derecho
-            if columna + eslora > self.tablero.shape[1]:
-                print("El barco sale del tablero")
+            if fila - (eslora - 1) < 0:
                 return False
 
-            # Generar las coordenadas que ocupará el barco
             for i in range(eslora):
-                posiciones.append((fila, columna + i))
+                posiciones.append((fila - i, columna))
 
-        # Orientación vertical: mantener la columna y avanzar por filas
-        elif orientacion == "vertical":
+        elif orientacion == "S":
 
-            # Comprobar que el barco no salga por el límite inferior
-            if fila + eslora > self.tablero.shape[0]:
-                print("El barco sale del tablero")
+            if fila + eslora > self.dimensiones:
                 return False
 
-            # Generar las coordenadas que ocupará el barco
             for i in range(eslora):
                 posiciones.append((fila + i, columna))
 
-        # Si la orientación no es válida, lanzar un error
-        else:
-            raise ValueError("La orientación debe ser horizontal o vertical")
+        elif orientacion == "E":
 
-        # ----------------------------------------------
-        # Comprobar que las posiciones estén libres
-        # ----------------------------------------------
-
-        # Recorrer todas las coordenadas calculadas
-        for x, y in posiciones:
-
-            # Si alguna casilla está ocupada, cancelar la colocación
-            if self.tablero[x, y] != 0:
-                print("Ya hay un barco en esa posición")
+            if columna + eslora > self.dimensiones:
                 return False
 
-        # ----------------------------------------------
-        # Colocar el barco en el tablero
-        # ----------------------------------------------
+            for i in range(eslora):
+                posiciones.append((fila, columna + i))
 
-        # Marcar con un 1 todas las casillas ocupadas por el barco
+        elif orientacion == "O":
+
+            if columna - (eslora - 1) < 0:
+                return False
+
+            for i in range(eslora):
+                posiciones.append((fila, columna - i))
+
+        else:
+            return False
+
+        # Comprobar que todas las posiciones están libres
+        for x, y in posiciones:
+            if self.tablero[x, y] != 0:
+                return False
+
+        # Colocar el barco
         for x, y in posiciones:
             self.tablero[x, y] = 1
 
-        # Guardar las coordenadas del barco en el diccionario
         self.posiciones_barcos[barco] = posiciones
 
-        # Confirmar que el barco se ha colocado correctamente
         return True
 
 
-    # ==================================================
-    # RECIBIR DISPAROS
-    # ==================================================
+    def colocar_barcos_aleatorios(self):
+        """
+        Coloca todos los barcos en posiciones y orientaciones aleatorias.
+        """
+
+        for barco in self.barcos:
+
+            colocado = False
+            intentos = 0
+            num_intentos = 1000
+
+            while colocado == False and intentos < num_intentos:
+
+                # Generar coordenadas aleatorias
+                fila = np.random.randint(0, self.dimensiones)
+                columna = np.random.randint(0, self.dimensiones)
+
+                # Elegir una orientación aleatoria
+                orientacion = np.random.choice(["N", "S", "E", "O"])
+
+                # Intentar colocar el barco
+                colocado = self.colocar_barco(
+                    barco,
+                    fila,
+                    columna,
+                    orientacion
+                )
+
+                intentos += 1
+
+            if colocado == False:
+                raise RuntimeError(
+                    f"No se pudo colocar el barco {barco} "
+                    f"después de {num_intentos} intentos"
+                )
+
 
     def recibir_disparo(self, fila, columna):
+        """
+        Comprueba el disparo y registra si ha tocado agua o un barco.
 
-        # Comprobar que las coordenadas sean números enteros
+        Atributos:
+            fila (int): Fila donde se realiza el disparo.
+            columna (int): Columna donde se realiza el disparo.
+
+        Returns:
+            str or bool: 'agua' si alcanza el agua, 'tocado' si alcanza
+            un barco o False si el disparo no es válido.
+        """
+
         if not isinstance(fila, (int, np.integer)) or not isinstance(columna, (int, np.integer)):
             print("Las coordenadas deben ser enteros")
             return False
 
-        # Comprobar que el disparo esté dentro de los límites del tablero
-        if fila < 0 or fila >= self.dimensiones or columna < 0 or columna >= self.dimensiones:
+        if fila < 0 or columna < 0 or fila >= self.dimensiones or columna >= self.dimensiones:
             print("Disparo fuera del tablero")
             return False
 
-        # Comprobar que no se haya disparado anteriormente en esa casilla
         if self.disparos[fila, columna] != 0:
-            print("Ya has disparado aquí")
+            print("Ya has disparado en esa posición")
             return False
 
-        # ----------------------------------------------
-        # Comprobar el resultado del disparo
-        # ----------------------------------------------
-
-        # Si la casilla está vacía, el disparo ha fallado
         if self.tablero[fila, columna] == 0:
-
-            print("Agua")
-
-            # Registrar el disparo con un 1
             self.disparos[fila, columna] = 1
+            print("¡Agua!")
+            return "agua"
 
-        # Si hay un barco, el disparo ha acertado
         else:
-
-            print("¡Tocado!")
-
-            # Registrar el impacto con un 2
             self.disparos[fila, columna] = 2
-
-            # Comprobar si el impacto ha hundido algún barco
+            print("¡Tocado!")
             self.comprobar_hundimiento()
 
-            # Comprobar si todos los barcos han sido hundidos
             if self.comprobar_fin_partida():
-                print("¡Partida terminada! Has ganado.")
+                print(f"¡El jugador {self.id_jugador} ha hundido todos los barcos!")
 
-        # Confirmar que el disparo se ha realizado correctamente
-        return True
+            return "tocado"
 
-
-    # ==================================================
-    # COMPROBAR BARCOS HUNDIDOS
-    # ==================================================
 
     def comprobar_hundimiento(self):
+        """
+        Comprueba si algún barco ha recibido todos sus impactos.
 
-        # Recorrer todos los barcos y sus respectivas posiciones
+        Actualiza la lista de barcos hundidos cuando corresponde.
+        """
+
         for barco, posiciones in self.posiciones_barcos.items():
 
-            # Si el barco ya está hundido, pasar al siguiente
-            # Así evitamos anunciar el mismo hundimiento varias veces
-            if barco in self.barcos_hundidos:
-                continue
+            if barco not in self.barcos_hundidos:
 
-            # Suponer inicialmente que el barco está hundido
-            hundido = True
+                hundido = True
 
-            # Comprobar todas las casillas que ocupa el barco
-            for x, y in posiciones:
+                for x, y in posiciones:
+                    if self.disparos[x, y] != 2:
+                        hundido = False
+                        break
 
-                # Si alguna casilla no ha recibido un impacto,
-                # el barco todavía no está hundido
-                if self.disparos[x, y] != 2:
-                    hundido = False
-                    break
+                if hundido:
+                    self.barcos_hundidos.append(barco)
+                    print(f"¡Has hundido el barco {barco}!")
 
-            # Si todos los impactos están registrados, el barco está hundido
-            if hundido:
-
-                print(f"¡Has hundido el {barco}!")
-
-                # Añadir el barco a la lista de barcos hundidos
-                self.barcos_hundidos.append(barco)
-
-
-    # ==================================================
-    # COMPROBAR FIN DE PARTIDA
-    # ==================================================
 
     def comprobar_fin_partida(self):
+        """
+        Comprueba si todos los barcos están hundidos.
 
-        # Si todavía no hay barcos colocados, la partida no ha terminado
-        if not self.posiciones_barcos:
+        Returns:
+            bool: True si todos los barcos están hundidos, False en caso contrario.
+        """
+
+        if len(self.posiciones_barcos) != len(self.barcos):
             return False
 
-        # Recorrer todos los barcos colocados
         for barco, posiciones in self.posiciones_barcos.items():
 
-            # Comprobar todas las posiciones de cada barco
             for x, y in posiciones:
-
-                # Si alguna casilla no ha recibido un impacto,
-                # todavía quedan barcos por hundir
                 if self.disparos[x, y] != 2:
                     return False
 
-        # Si todas las casillas de todos los barcos tienen impactos,
-        # la partida ha terminado
         return True
 
 
-    # ==================================================
-    # MOSTRAR TABLERO
-    # ==================================================
-
     def mostrar(self, ocultar_barcos=False):
+        """
+        Muestra el tablero y permite ocultar los barcos del rival.
+
+        Atributos:
+            ocultar_barcos (bool): Si es True, oculta los barcos que no han sido tocados.
+        """
 
         print("  A B C D E F G H I J")
 
         for fila in range(self.dimensiones):
 
-            print(fila + 1, end=" ")
+            print(f"{fila + 1:2}", end=" ")
 
             for columna in range(self.dimensiones):
 
