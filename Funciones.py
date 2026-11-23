@@ -1,16 +1,16 @@
 # Funciones Hudnir la flota
 # import /from lo qe se necesite de clases y variables
-# mostars instrucciones falta por hacer
+# mostrar instrucciones falta por hacer 
 import random
 
 # rangos de letras y numeros donde se puede jugar
-letras_validas = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
+letras_validas = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]  # cambiar por tablero  
 numeros_validos = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
                    
 # Definimos pedir las coordenadas para el disparo 
-def pedir_coordenadas():
+def disparo():
     fila = input("elige una fila (A-J): ").upper() 
-    while fila not in letras_validas:
+    while fila not in tablero:
         print("Eso no vale, escribe una letra de la A a la J")
         fila = input("Elige una fila (A-J): ").upper()
 
@@ -24,16 +24,17 @@ def pedir_coordenadas():
 
     return fila_numero, columna_numero
 
-#Pausa: me corrige la ia ofallos ortograficos
+#Pausa: me corrige la ia los fallos ortograficos
 
 #definamos el disparo de la maquina
-def eleigir_disparo_maquina(disparos_hechos):
-    fila = random.radiint(0, tablero - 1)  ##necesito saber numeor tablero
+def elegir_disparo_maquina(disparos_hechos):
+    fila = random.radint(0, tablero - 1)  ##necesito saber numero tablero
     columna = random.radint(0, tablero - 1)
 
-    while (fila, columna) in disparos_hechos:  # comrpobar disparos
+    while (fila, columna) in disparos_hechos:  # comprobar disparos
         fila = random.radint(0, tablero -1)
         columna = random.radint(0, tablero -1)
 
-    disparos_hechos.append((fila, caloumna)) 
+    disparos_hechos.append((fila, columna)) 
     return fila, columna
+
