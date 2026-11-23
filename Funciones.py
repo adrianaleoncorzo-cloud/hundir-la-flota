@@ -1,6 +1,16 @@
 # Funciones Hudnir la flota
 # import /from lo qe se necesite de clases y variables
-# mostrar instrucciones falta por hacer 
+
+Instrucciones = (
+    "Bienevenido al Hundir la flota. El juego consiste en los siguiente: \n" 
+    "Hay 5 barcos por bando, deber de hundir los barcos del enemigo antes que el hunda los tuyos \n" 
+    "EL tablero consta de una medida de 10x10 casillas \n" 
+    "Cada badno tiene un total de 5 barcos de difeentes medidas: \n" 
+        "1 barco de 4 casillas de longitud, 1 de 3 casillas, 1 de 2 casillas y 2 de 1 casilla. \n" 
+    "En cada turno se dispara una vez, si fallas, aparecerá AGUA y le toca al siguiente jugador. \n" 
+    "Si aciertas, aprarecá TOCADO y seguirás disparando, cuando hundas un barco aparecerá HUNDIDO \n" 
+    "Fácil ¿verdad? PUES A JUGAR")
+
 import random
 
 # rangos de letras y numeros donde se puede jugar
