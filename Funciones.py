@@ -2,14 +2,17 @@
 # import /from lo qe se necesite de clases y variables
 
 Instrucciones = (
-    "Bienevenido al Hundir la flota. El juego consiste en los siguiente: \n" 
-    "Hay 5 barcos por bando, deber de hundir los barcos del enemigo antes que el hunda los tuyos \n" 
-    "EL tablero consta de una medida de 10x10 casillas \n" 
-    "Cada badno tiene un total de 5 barcos de difeentes medidas: \n" 
+    "Bienvenido al Hundir la flota. El juego consiste en lo siguiente: \n" 
+    "Hay 5 barcos por bando, debes de hundir los barcos del enemigo antes que el hunda los tuyos \n" 
+    "E tablero consta de una medida de 10x10 casillas \n" 
+    "Cada bando tiene un total de 5 barcos de diferentes medidas: \n" 
         "1 barco de 4 casillas de longitud, 1 de 3 casillas, 1 de 2 casillas y 2 de 1 casilla. \n" 
     "En cada turno se dispara una vez, si fallas, aparecerá AGUA y le toca al siguiente jugador. \n" 
-    "Si aciertas, aprarecá TOCADO y seguirás disparando, cuando hundas un barco aparecerá HUNDIDO \n" 
-    "Fácil ¿verdad? PUES A JUGAR")
+    "Si aciertas, aparecerá TOCADO y seguirás disparando, cuando hundas un barco aparecerá HUNDIDO \n" 
+    "Fácil ¿verdad? ¡PUES A JUGAR!")
+
+def mostrar_instrucciones():
+    print(Instrucciones)
 
 import random
 
@@ -20,7 +23,7 @@ numeros_validos = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 # Definimos pedir las coordenadas para el disparo 
 def disparo():
     fila = input("elige una fila (A-J): ").upper() 
-    while fila not in tablero:
+    while fila not in letras_validas:
         print("Eso no vale, escribe una letra de la A a la J")
         fila = input("Elige una fila (A-J): ").upper()
 
