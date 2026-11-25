@@ -188,15 +188,24 @@ class Tablero:
             print("¡Agua!")
             return "agua"
 
+        
         else:
             self.disparos[fila, columna] = 2
             print("¡Tocado!")
+
             self.comprobar_hundimiento()
 
             if self.comprobar_fin_partida():
                 print(f"¡El jugador {self.id_jugador} ha hundido todos los barcos!")
 
+            # Comprobar si el último disparo ha hundido un barco
+            for barco, posiciones in self.posiciones_barcos.items():
+
+                if (fila, columna) in posiciones and barco in self.barcos_hundidos:
+                    return "hundido"
+
             return "tocado"
+
 
 
     def comprobar_hundimiento(self):
@@ -219,7 +228,7 @@ class Tablero:
 
                 if hundido:
                     self.barcos_hundidos.append(barco)
-                    print(f"¡Has hundido el barco {barco}!")
+                    print(f"¡Hundido! ¡Has hundido el barco {barco}!")
 
 
     def comprobar_fin_partida(self):

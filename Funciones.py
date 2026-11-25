@@ -31,10 +31,10 @@ def disparo():
     fila = input("Elige un numero (1-10): ").strip()
     while fila not in numeros_validos:
         print("Eso no vale, escribe un numero del 1 al 10")
-        fila = input("Elige una numero (1-10): ").strip()
+        fila = input("Elige un numero (1-10): ").strip()
 
-    fila_numero = letras_validas.index(columna)
-    columna_numero = int(fila) - 1
+    columna_numero = letras_validas.index(columna)
+    fila_numero = int(fila) - 1
 
     return columna_numero, fila_numero
 

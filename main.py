@@ -4,7 +4,7 @@ import pandas as pd
 
 from variables import barcos, TAMANO_TABLERO
 from clases import Tablero
-from Funciones import disparo, disparo_maquina, mostrar_instrucciones
+from funciones import disparo, disparo_maquina, mostrar_instrucciones
 
 
 TAMANO_TABLERO = 10
