@@ -158,13 +158,14 @@ class Tablero:
                 )
 
 
-    def recibir_disparo(self, fila, columna):
+    def recibir_disparo(self, fila, columna, mostrar_mensajes=True):
         """
         Comprueba el disparo y registra si ha tocado agua o un barco.
 
         Atributos:
             fila (int): Fila donde se realiza el disparo.
             columna (int): Columna donde se realiza el disparo.
+            mostrar_mensajes (bool): Si es True, muestra los mensajes en consola.
 
         Returns:
             str or bool: 'agua' si alcanza el agua, 'tocado' si alcanza
@@ -172,38 +173,44 @@ class Tablero:
         """
 
         if not isinstance(fila, (int, np.integer)) or not isinstance(columna, (int, np.integer)):
-            print("Las coordenadas deben ser enteros")
+            if mostrar_mensajes:
+                print("Las coordenadas deben ser enteros")
             return False
 
         if fila < 0 or columna < 0 or fila >= self.dimensiones or columna >= self.dimensiones:
-            print("Disparo fuera del tablero")
+            if mostrar_mensajes:
+                print("Disparo fuera del tablero")
             return False
 
         if self.disparos[fila, columna] != 0:
-            print("Ya has disparado en esa posición")
+            if mostrar_mensajes:
+                print("Ya has disparado en esa posición")
             return False
 
         if self.tablero[fila, columna] == 0:
             self.disparos[fila, columna] = 1
-            print("¡Agua!")
+            if mostrar_mensajes:
+                print("\n¡Agua!")
             return "agua"
 
         else:
             self.disparos[fila, columna] = 2
-            print("¡Tocado!")
-            self.comprobar_hundimiento()
+            if mostrar_mensajes:
+                print("\n¡Tocado!")
+            self.comprobar_hundimiento(mostrar_mensajes)
 
-            if self.comprobar_fin_partida():
-                print(f"¡El jugador {self.id_jugador} ha hundido todos los barcos!")
-
+            # El main anuncia la victoria para que el mensaje no se repita aqui.
             return "tocado"
 
 
-    def comprobar_hundimiento(self):
+    def comprobar_hundimiento(self, mostrar_mensajes=True):
         """
         Comprueba si algún barco ha recibido todos sus impactos.
 
         Actualiza la lista de barcos hundidos cuando corresponde.
+
+        Atributos:
+            mostrar_mensajes (bool): Si es True, muestra los mensajes en consola.
         """
 
         for barco, posiciones in self.posiciones_barcos.items():
@@ -219,7 +226,8 @@ class Tablero:
 
                 if hundido:
                     self.barcos_hundidos.append(barco)
-                    print(f"¡Has hundido el barco {barco}!")
+                    if mostrar_mensajes:
+                        print(f"\n¡Has hundido el barco {barco}!")
 
 
     def comprobar_fin_partida(self):

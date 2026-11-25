@@ -1,44 +1,82 @@
-# Definamos jugar
-import numpy as np 
-import pandas as pd
-from funciones import mostrar_instrucciones
-
-from variables import TAMANO_TABLERO
+from Funciones import mostrar_instrucciones, disparo, elegir_disparo_maquina
+from variables import TAMANO_TABLERO, barcos
 from clases import Tablero
 
-tablero_jugador = Tablero("Jugador", TAMANO_TABLERO, barcos)  #definir el tablero el cual nostros jugamos
-tablero_maquina = Tablero("Maquina", TAMANO_TABLERO, barcos)  # definir tablero maquina
 
-disparos_maquina = []  # para que la maquina no dispare al mismo lugar
+def jugar_consola():
+    tablero_jugador = Tablero("Jugador", TAMANO_TABLERO, barcos)
+    tablero_maquina = Tablero("Maquina", TAMANO_TABLERO, barcos)
 
-# vamos a mostrar los tableros
-while True:
-    print(tablero_jugador)
-    tablero_jugador.mostrar(ocultar_barcos = False)  # mostramos nuestro tablero con los barcos
+    # Colocamos los barcos antes de empezar para que haya barcos que hundir.
+    tablero_jugador.colocar_barcos_aleatorios()
+    tablero_maquina.colocar_barcos_aleatorios()
 
-    print(tablero_maquina)
-    tablero_maquina.mostrar(ocultar_barcos = True)   # mostrabmos el tablero sin los barcos del contrario
+    disparos_maquina = []
+    partida_terminada = False
 
-# Bucle de turno del jugador
+    mostrar_instrucciones()
 
-print("Tu turno:")
-disparo_valido = False
-while not dispare_valido:
-    fila, col = disparo()
-    disparo_valido = tablero_maquina.recibir_disparo(fila, columna)
+    # La partida sigue hasta que se hundan todos los barcos de alguien.
+    while not partida_terminada:
+        print("\n" + "-" * 30)
+        print("Tablero del jugador")
+        tablero_jugador.mostrar(ocultar_barcos=False)
 
-    if tablero_maquina.comprobar_fin_partido():
-        print("\n ¡VICTORIA!")
-    break
+        print("\nTablero de la maquina")
+        tablero_maquina.mostrar(ocultar_barcos=True)
 
-# Bucle del tunro de la maquina
+        print("Tu turno:")
+        while True:
+            fila, columna = disparo()
+            resultado = tablero_maquina.recibir_disparo(fila, columna)
 
-print("\n Turno de la maquina:")
-fila_m, col_m = elegir_disparo_maquina(disparos_maquina)
-tablero_jugador.recibir_disparos(fila_m, col_m)
+            if resultado is False:
+                continue
 
-if tablero_jugador.comprobar_fin_partida():
-    print("\n ¡HAS PERDIDO!")
-break
+            if tablero_maquina.comprobar_fin_partida():
+                print("\n¡VICTORIA!")
+                partida_terminada = True
+                break
 
-# Codigo hecho por IA
+            # Si fue agua, el turno termina; si acertamos, podemos disparar otra vez.
+            if resultado == "agua":
+                break
+
+        if partida_terminada:
+            break
+
+        print("\nTurno de la maquina:")
+        while True:
+            fila_m, col_m = elegir_disparo_maquina(disparos_maquina)
+            resultado = tablero_jugador.recibir_disparo(fila_m, col_m)
+
+            if resultado is False:
+                continue
+
+            if tablero_jugador.comprobar_fin_partida():
+                print("\n¡HAS PERDIDO!")
+                partida_terminada = True
+                break
+
+            # La maquina tambien sigue disparando si ha tocado un barco.
+            if resultado == "agua":
+                break
+
+
+def main():
+    respuesta = input("¿Quieres abrir la interfaz grafica? (s/n): ").strip().lower()
+
+    while respuesta not in ("s", "si", "sí", "n", "no"):
+        respuesta = input("Escribe s para la interfaz o n para la consola: ").strip().lower()
+
+    if respuesta in ("s", "si", "sí"):
+        # La interfaz solo se importa si se elige, para dejar la consola independiente.
+        from interfaz import abrir_interfaz
+
+        abrir_interfaz()
+    else:
+        jugar_consola()
+
+
+if __name__ == "__main__":
+    main()
