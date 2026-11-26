@@ -15,6 +15,7 @@ def mostrar_instrucciones():
     print(Instrucciones)
 
 import random
+from variables import TAMANO_TABLERO
 
 # rangos de letras y numeros donde se puede jugar
 letras_validas = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]  # cambiar por tablero  
@@ -41,12 +42,12 @@ def disparo():
 
 #definamos el disparo de la maquina
 def elegir_disparo_maquina(disparos_hechos):
-    fila = random.radint(0, tablero - 1)  ##necesito saber numero tablero
-    columna = random.radint(0, tablero - 1)
+    fila = random.randint(0, TAMANO_TABLERO - 1)
+    columna = random.randint(0, TAMANO_TABLERO - 1)
 
     while (fila, columna) in disparos_hechos:  # comprobar disparos
-        fila = random.radint(0, tablero -1)
-        columna = random.radint(0, tablero -1)
+        fila = random.randint(0, TAMANO_TABLERO - 1)
+        columna = random.randint(0, TAMANO_TABLERO - 1)
 
     disparos_hechos.append((fila, columna)) 
     return fila, columna
